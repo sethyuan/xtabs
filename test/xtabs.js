@@ -58,9 +58,25 @@ describe("xtabs", function() {
     });
   });
 
-  it("a single factor");
+  it("a single factor", function() {
+    var x = xtabs.factor(["Male", "Female", "Female", "Female", "Male", "Female"]),
+        t = xtabs.table(x);
+    (t instanceof xtabs.Table).should.be.true;
+    t.get("Male").should.equal(2);
+    t.get("Female").should.equal(4);
+    t.get(0).should.equal(2);
+    t.get(1).should.equal(4);
+  });
 
-  it("a single vector (array)");
+  it("a single vector (array)", function() {
+    var x = ["Male", "Female", "Female", "Female", "Male", "Female"],
+        t = xtabs.table(x);
+    (t instanceof xtabs.Table).should.be.true;
+    t.get("Male").should.equal(2);
+    t.get("Female").should.equal(4);
+    t.get(0).should.equal(2);
+    t.get(1).should.equal(4);
+  });
 
   it("a single factor counting NA (aka null)");
 
