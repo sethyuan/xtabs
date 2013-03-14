@@ -1,0 +1,37 @@
+{
+  "name": "xtabs",
+  "version": "0.1.0",
+  "description": "A cross tabulation library for Node.js",
+  "main": "./lib/xtabs.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sethyuan/xtabs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sethyuan/xtabs/issues",
+    "email": "cavingdeep@gmail.com"
+  },
+  "keywords": [
+    "cross",
+    "tabulation",
+    "statistics",
+    "xtabs",
+    "R",
+    "tab"
+  ],
+  "author": {
+    "name": "sethyuan",
+    "email": "cavingdeep@gmail.com"
+  },
+  "engines": {
+    "node": ">=0.8"
+  },
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "devDependencies": {
+    "should": "latest"
+  }
+}
