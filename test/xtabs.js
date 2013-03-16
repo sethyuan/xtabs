@@ -129,7 +129,8 @@ describe("xtabs", function() {
     };
     var t = xtabs.table(data, "gender");
     t.dim.should.eql([2]);
-    t.dimnames[0].names.should.eql(["Male", "Female"]);
+    t.dimnames[0].dim.should.equal("gender");
+    t.dimnames[0].names.should.eql(["M", "F"]);
     t.get("M").should.equal(4);
     t.get("F").should.equal(2);
     t.get(0).should.equal(4);
@@ -145,13 +146,24 @@ describe("xtabs", function() {
     t.dim.should.eql([3, 2]);
     t.get("HR", "M").should.equal(0);
     t.get("HR", "F").should.equal(0);
-    t.get(null, "M").get("TR").should.equal(2);
-    t.get(null, "M").get(2).should.equal(2);
-    t.get(0, null).dim.should.eql([2]);
-    t.get(0, null).dimnames[0].names.should.eql(["M", "F"]);
+    t.get(undefined, "M").get("TR").should.equal(2);
+    t.get(undefined, "M").get(2).should.equal(2);
+    t.get(0).dim.should.eql([2]);
+    t.get(0, undefined).dimnames[0].names.should.eql(["M", "F"]);
   });
 
-  it("data frame with 3 variables");
+  it("data frame with 3 variables", function() {
+    var data = {
+      department: xtabs.factor(["MIS", "MIS", "HR", "TR", null, "TR", "MIS"]),
+      team: xtabs.factor(["Oversea", "PO", "HR", "Tech", null, "Tech", "PO"]),
+      gender: xtabs.factor(["M", "F", null, "M", "F", "M", "M"])
+    };
+    var t = xtabs.table(data, "department", "team", "gender");
+    t.dim.should.eql([3, 4, 2]);
+    t.get("TR", "Tech", "M").should.equal(2);
+    t.get(undefined, "Tech", "M").get("TR").should.equal(2);
+    t.get(undefined, undefined, "M").get("TR").get("Tech").should.equal(2);
+  });
 
   it("data frame counting NA (aka null)", function() {
     var data = {
@@ -160,5 +172,32 @@ describe("xtabs", function() {
     };
     var t = xtabs.table(data, "department", "gender", true);
     t.dim.should.eql([4, 3]);
+    t.get(null).dim.should.eql([3]);
+  });
+
+  describe("Table#get", function() {
+    var data = {
+      department: xtabs.factor(["MIS", "MIS", "HR", "TR", null, "TR", "MIS"]),
+      gender: xtabs.factor(["M", "F", null, "M", "F", "M", "M"])
+    };
+    var t = xtabs.table(data, "department", "gender");
+
+    it("with no arguments", function() {
+      t.get().should.equal(t);
+    });
+
+    it("with wrong variable", function() {
+      (function() {
+        t.get("NonExistentDepartment");
+      }).should.throw();
+    });
+
+    it("different rows using variable name", function() {
+      t.get(["MIS", "TR"], "M").dim.should.eql([2]);
+    });
+
+    it("different rows using variable index", function() {
+      t.get([0, 2], [0, 1]).dim.should.eql([2, 2]);
+    });
   });
 });
