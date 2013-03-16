@@ -16,8 +16,8 @@ var xtabs = require("xtabs"),
 
 data = {
   // null represents absence of data, like NA in R.
-  department: xtabs.factor(["RD", "RD", "HR", "GA", null, "GA", "RD"]),
-  gender: xtabs.factor(["M", "F", null, "M", "F", "M", "M"])
+  department: ["RD", "RD", "HR", "GA", null, "GA", "RD"],
+  gender: ["M", "F", null, "M", "F", "M", "M"]
 };
 
 // Make a cross tabulation by department and gender.
