@@ -1,6 +1,6 @@
 # xtabs
 
-A cross tabulation library for Node.js
+A cross tabulation library simulating R's API.
 
 ## Installation
 
@@ -10,7 +10,41 @@ $ npm install xtabs
 
 ## Example
 
+```js
+var xtabs = require("xtabs"),
+    data, t;
+
+data = {
+  // null represents absence of data, like NA in R.
+  department: xtabs.factor(["RD", "RD", "HR", "GA", null, "GA", "RD"]),
+  gender: xtabs.factor(["M", "F", null, "M", "F", "M", "M"])
+};
+
+// Make a cross tabulation by department and gender.
+t = xtabs.table(data, "department", "gender");
+console.log(t.get("HR", "M")); // 0
+console.log(t.get("RD", "F")); // 1
+console.log(t.dim); // [3, 2]
+console.log(t.dimnames);
+
+// Use undefined to indicate that you want the whole data.
+// t.get(undefined, "M") is equivalent to t[, "M"] in R.
+console.log(t.get(undefined, "M").get("GA")); // 2
+
+// You can also use number indices to retrieve data.
+// t.get(0) is equivalent to t.get(0, undefined).
+console.log(t.get(0).dim); // [2]
+```
+
 ## API
+
+### xtabs.factor(x, [useNull])
+
+### xtabs.isFactor(o)
+
+### xtabs.asString(factor)
+
+### xtabs.table(x, [[variable, ...], useNull])
 
 ## License
 
