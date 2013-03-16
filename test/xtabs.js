@@ -73,6 +73,16 @@ describe("xtabs", function() {
     });
   });
 
+  it("diffrent length data", function() {
+    var data = {
+      department: ["MIS", "MIS", "HR", "TR", null, "TR", "MIS"],
+      gender: ["M", "F", null, "M", "F", "M"]
+    };
+    (function() {
+      xtabs.table(data, "department", "gender");
+    }).should.throw();
+  });
+
   it("single factor", function() {
     var x = xtabs.factor(["Male", "Female", "Female", "Female", "Male", "Female"]),
         t = xtabs.table(x);
