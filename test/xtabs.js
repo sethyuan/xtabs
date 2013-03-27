@@ -133,6 +133,15 @@ describe("xtabs", function() {
     t.dimnames[0].names.should.eql(["Male", "Female", "null", null]);
   });
 
+  it("single factor not counting NA", function() {
+    var x = xtabs.factor(["Male", "Female", "Female", "Female", "null", "Male", null, "Female"], true),
+        t = xtabs.table(x, false);
+    t.get("Male").should.equal(2);
+    t.get("Female").should.equal(4);
+    t.get("null").should.equal(1);
+    t.get(null).should.throw();
+  });
+
   it("data frame (an object with array members)", function() {
     var data = {
       gender: xtabs.factor(["M", "F", "M", null, "F", "M", "M"])
