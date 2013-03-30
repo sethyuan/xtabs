@@ -139,7 +139,7 @@ describe("xtabs", function() {
     t.get("Male").should.equal(2);
     t.get("Female").should.equal(4);
     t.get("null").should.equal(1);
-    t.get(null).should.throw();
+    (function() { t.get(null); }).should.throw();
   });
 
   it("data frame (an object with array members)", function() {
@@ -220,30 +220,80 @@ describe("xtabs", function() {
     });
   });
 
-  describe("addmargins", function() {
+  describe("addMargins", function() {
     var data = {
       department: xtabs.factor(["MIS", "MIS", "HR", "TR", null, "TR", "MIS"]),
       team: xtabs.factor(["Oversea", "PO", "HR", "Tech", null, "Tech", "PO"]),
-      gender: xtabs.factor(["M", "F", null, "M", "F", "M", "M"])
+      gender: xtabs.factor(["M", "F", "F", "M", "F", "M", "M"])
     };
-    var t = xtabs.table(data, "department", "team", "gender");
 
-    it("add a row sum", function() {
-      var table = xtabs.addmargins(t, [0, 1], {n: "sum", f: jstat.sum});
-      var misSum = table.get("MIS", "sum");
-      misSum.get("M").should.equal(2);
-      var techSum = table.get("sum", "Tech");
-      techSum.get("M").should.equal(2);
-      techSum.get("F").should.equal(0);
+    var sum = function(a) {
+      return a.reduce(function(x, y) { return x + y });
+    };
+
+    var mean = function(a) {
+      return sum(a) / a.length;
+    };
+
+    var prod = function(a) {
+      var res = a.reduce(function(x, y) { return x * y });
+      if (res === 0) res = 1;
+      return res;
+    };
+
+    it("single margin, single function on 1 dimensional table", function() {
+      var t = xtabs.table(data, "gender");
+      var t_ = xtabs.addMargins(t, 0, { n: "Sum", f: sum });
+      t_.array.should.eql([4, 3, 7]);
     });
 
-    it("add a row sum and mean", function() {
-      var table = xtabs.addmargins(t, [0, 1], [[{n: "sum", f: jstat.sum}, {n: "mean", f: jstat.mean}], [{n: "sum", f: jstat.sum}]]);
-      var misSum = table.get("MIS", "sum");
-      misSum.get("M").should.equal(2);
-      var techSum = table.get("sum", "Tech");
-      techSum.get("M").should.equal(2);
-      techSum.get("F").should.equal(0);
+    it("single margin, multiple functions on 1 dimensional table", function() {
+      var t = xtabs.table(data, "gender");
+      var t_ = xtabs.addMargins(t, 0, [[{ n: "Sum", f: sum }, { n: "Mean", f: mean }]]);
+      t_.array.should.eql([4, 3, 7, 3.5]);
+    });
+
+    it("single margin, single function on 2 dimensional table", function() {
+      var t = xtabs.table(data, "department", "gender");
+      var t_ = xtabs.addMargins(t, 0, { n: "Sum", f: sum });
+      t_.array.should.eql([2, 1, 0, 1, 2, 0, 4, 2]);
+    });
+
+    it("single margin, single function on 2 dimensional table -- 2", function() {
+      var t = xtabs.table(data, "department", "gender");
+      var t_ = xtabs.addMargins(t, 1, { n: "Sum", f: sum });
+      t_.array.should.eql([2, 1, 3, 0, 1, 1, 2, 0, 2]);
+    });
+
+    it("single margin, multiple functions on 2 dimensional table", function() {
+      var t = xtabs.table(data, "department", "gender");
+      var t_ = xtabs.addMargins(t, 0, [[{ n: "Sum", f: sum }, { n: "Mean", f: mean }]]);
+      t_.array.should.eql([2, 1, 0, 1, 2, 0, 4, 2, 4/3, 2/3]);
+    });
+
+    it("single margin, multiple functions on 2 dimensional table -- 2", function() {
+      var t = xtabs.table(data, "department", "gender");
+      var t_ = xtabs.addMargins(t, 1, [[{ n: "Sum", f: sum }, { n: "Mean", f: mean }]]);
+      t_.array.should.eql([2, 1, 3, 3/2, 0, 1, 1, 1/2, 2, 0, 2, 2/2]);
+    });
+
+    it("single margin, multiple functions on 3 dimensional table", function() {
+      var t = xtabs.table(data, "department", "team", "gender");
+      var t_ = xtabs.addMargins(t, 1, [[{ n: "Sum", f: sum }, { n: "Mean", f: mean }]]);
+      t_.get("MIS", "Sum").array.should.eql([2, 1]);
+      t_.get("MIS", "Mean").array.should.eql([2/4, 1/4]);
+    });
+
+    it("2 margins, multiple functions on 3 dimensional table", function() {
+      var t = xtabs.table(data, "department", "team", "gender");
+      var t_ = xtabs.addMargins(t, [0, 1], [[{ n: "Sum", f: sum }, { n: "Mean", f: mean }], [{ n: "Prod", f: prod }]]);
+      t_.get("Sum", "Prod").array.should.eql([1, 1]);
+    });
+
+    it("2 margins, multiple functions on 3 dimensional table -- 2", function() {
+      var t = xtabs.table(data, "department", "team", "gender");
+      var t_ = xtabs.addMargins(t, [1, 0], [[{ n: "Prod", f: prod }], [{ n: "Sum", f: sum }, { n: "Mean", f: mean }]]);
+      t_.get("Sum", "Prod").array.should.eql([3, 3]);
     });
   });
 });
