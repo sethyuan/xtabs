@@ -219,4 +219,31 @@ describe("xtabs", function() {
       t.get([0, 2], [0, 1]).dim.should.eql([2, 2]);
     });
   });
+
+  describe("addmargins", function() {
+    var data = {
+      department: xtabs.factor(["MIS", "MIS", "HR", "TR", null, "TR", "MIS"]),
+      team: xtabs.factor(["Oversea", "PO", "HR", "Tech", null, "Tech", "PO"]),
+      gender: xtabs.factor(["M", "F", null, "M", "F", "M", "M"])
+    };
+    var t = xtabs.table(data, "department", "team", "gender");
+
+    it("add a row sum", function() {
+      var table = xtabs.addmargins(t, [0, 1], {n: "sum", f: jstat.sum});
+      var misSum = table.get("MIS", "sum");
+      misSum.get("M").should.equal(2);
+      var techSum = table.get("sum", "Tech");
+      techSum.get("M").should.equal(2);
+      techSum.get("F").should.equal(0);
+    });
+
+    it("add a row sum and mean", function() {
+      var table = xtabs.addmargins(t, [0, 1], [[{n: "sum", f: jstat.sum}, {n: "mean", f: jstat.mean}], [{n: "sum", f: jstat.sum}]]);
+      var misSum = table.get("MIS", "sum");
+      misSum.get("M").should.equal(2);
+      var techSum = table.get("sum", "Tech");
+      techSum.get("M").should.equal(2);
+      techSum.get("F").should.equal(0);
+    });
+  });
 });
