@@ -58,12 +58,17 @@ var t = xtabs.table(data, "department", "gender");
 
 // This adds a row 'Sum'.
 var t_ = xtabs.addMargins(t, 0, { n: "Sum", f: sum });
+console.log(t_.get("Sum", "M")); // 4
+console.log(t_.get("Sum").array); // [4, 1]
 
 // This adds a column 'Sum'.
 var t_ = xtabs.addMargins(t, 1, { n: "Sum", f: sum });
+console.log(t_.get("RD", "Sum")); // 3
+console.log(t_.get(undefined, "Sum").array); // [3, 0, 2]
 
 // This adds both a row 'Sum' and a column 'Sum'.
 var t_ = xtabs.addMargins(t, [0, 1], { n: "Sum", f: sum });
+console.log(t_.get("Sum", "Sum")); // 5
 
 // This adds 'Sum' and 'Prod' rows and a 'Sum' column.
 var t_ = xtabs.addMargins(t, [0, 1],
