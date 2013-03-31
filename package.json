@@ -1,6 +1,6 @@
 {
   "name": "xtabs",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A cross tabulation library for Node.js",
   "main": "./lib/xtabs.js",
   "scripts": {
@@ -20,7 +20,8 @@
     "statistics",
     "xtabs",
     "R",
-    "tab"
+    "tab",
+    "factor"
   ],
   "author": {
     "name": "sethyuan",

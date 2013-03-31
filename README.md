@@ -8,20 +8,21 @@ A cross tabulation library simulating R's API.
 $ npm install xtabs
 ```
 
-## Example
+## Examples
+
+### Cross tabulation
 
 ```js
-var xtabs = require("xtabs"),
-    data, t;
+var xtabs = require("xtabs");
 
-data = {
+var data = {
   // null represents absence of data, like NA in R.
   department: ["RD", "RD", "HR", "GA", null, "GA", "RD"],
   gender: ["M", "F", null, "M", "F", "M", "M"]
 };
 
 // Make a cross tabulation by department and gender.
-t = xtabs.table(data, "department", "gender");
+var t = xtabs.table(data, "department", "gender");
 console.log(t.get("HR", "M")); // 0
 console.log(t.get("RD", "F")); // 1
 console.log(t.dim); // [3, 2]
@@ -40,6 +41,33 @@ console.log(t.get(["RD", "GA"], "F").dim); // [2]
 
 // List indices can also be in number form.
 console.log(t.get([0, 2], 1).dim); // [2]
+```
+
+### Adding margins
+
+```js
+var sum = function(a) {
+  return a.reduce(function(x, y) { return x + y });
+};
+
+var prod = function(a) {
+  return a.reduce(function(x, y) { return x * y });
+};
+
+var t = xtabs.table(data, "department", "gender");
+
+// This adds a row 'Sum'.
+var t_ = xtabs.addMargins(t, 0, { n: "Sum", f: sum });
+
+// This adds a column 'Sum'.
+var t_ = xtabs.addMargins(t, 1, { n: "Sum", f: sum });
+
+// This adds both a row 'Sum' and a column 'Sum'.
+var t_ = xtabs.addMargins(t, [0, 1], { n: "Sum", f: sum });
+
+// This adds 'Sum' and 'Prod' rows and a 'Sum' column.
+var t_ = xtabs.addMargins(t, [0, 1],
+  [[{ n: "Sum", f: sum }, { n: "Prod", f: prod }], [{ n: "Sum", f: sum }]]);
 ```
 
 ## API
@@ -82,6 +110,39 @@ For more about behaviors about cross tabulation, you can refer to R's `xtabs` fu
 
 If `useNull` is true, then `null` is counted too.
 
+### xtabs.addMargins(table, margins, fun)
+
+Add margins to a table. For a two-dimensional table, that means adding rows and columns, margin 0 represents rows, margin 1 represents columns. `fun` is the function to apply. E.g:
+
+```
+Given the following table:
+
+                gender
+department    M        F
+   RD         2        1
+   HR         0        0
+   GA         2        0
+
+After adding a margin 0 using a sum function, you will get:
+
+                gender
+department    M        F
+   RD         2        1
+   HR         0        0
+   GA         2        0
+   Sum        4        1
+
+If you add a margin 1 instead, you will get:
+
+                gender
+department    M        F      Sum
+   RD         2        1       3
+   HR         0        0       0
+   GA         2        0       2
+```
+
+You can add multiple margins at once, or apply multiple functions at once, or both. If you want to add multiple margins at once, you pass in an array of margins to be added in order, instead of a single margin. If you want to apply multiple functions, you can provide a list of function objects (See [Adding margins](#adding-margins)) per margin. Functions are applied in the same order the margins are provided.
+
 ## Class: xtabs.Table
 
 This is what you get when you call [xtabs.table](#xtabstablex-variable--usenull), however, this class is not directly exposed to you.
@@ -94,9 +155,13 @@ The dimensions of the table. It's an array with each dimension's length.
 
 An array containing each dimension's names, each one has a `dim` property indicating the dimension's name and a `names` property indicating each level's name in the dimension. 
 
+### table.array
+
+The array representing the table. This is underline data structure of the table.
+
 ### table.get([level | list of levels, ...])
 
-Gets data out of the table. Basically, you pass in each variable's index or indices to get the data out. You can also pass in `undefined` as a special way to indicate that you want all the data of this variable. You can refer to the [Examples](#example) section for the various ways to use this method.
+Gets data out of the table. Basically, you pass in each variable's index or indices to get the data out. You can also pass in `undefined` as a special way to indicate that you want all the data of this variable. You can refer to the [Examples](#examples) section for the various ways to use this method.
 
 ## License
 
