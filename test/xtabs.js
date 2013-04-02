@@ -220,6 +220,44 @@ describe("xtabs", function() {
     });
   });
 
+  describe("prop", function() {
+    var data = {
+      department: xtabs.factor(["MIS", "MIS", "HR", "TR", null, "TR", "MIS"]),
+      team: xtabs.factor(["Oversea", "PO", "HR", "Tech", null, "Tech", "PO"]),
+      gender: xtabs.factor(["M", "F", "F", "M", "F", "M", "M"])
+    };
+
+    it("proportions of the whole", function() {
+      var t = xtabs.table(data, "department", "gender");
+      var t_ = xtabs.prop(t);
+      t_.array.should.eql([2/6, 1/6, 0, 1/6, 2/6, 0]);
+    });
+
+    it("proportions of the row", function() {
+      var t = xtabs.table(data, "department", "gender");
+      var t_ = xtabs.prop(t, 0);
+      t_.array.should.eql([2/3, 1/3, 0, 1, 1, 0]);
+    });
+
+    it("proportions of the column", function() {
+      var t = xtabs.table(data, "department", "gender");
+      var t_ = xtabs.prop(t, 1);
+      t_.array.should.eql([.5, .5, 0, .5, .5, 0]);
+    });
+
+    it("proportions of margin 2", function() {
+      var t = xtabs.table(data, "department", "team", "gender");
+      var t_ = xtabs.prop(t, 2);
+      t_.get("MIS").array.should.eql([1/4, 0, 1/4, 1/2, 0, 0, 0, 0]);
+    });
+
+    it("single dimension", function() {
+      var t = xtabs.table(data, "gender");
+      var t_ = xtabs.prop(t);
+      t_.array.should.eql([4/7, 3/7]);
+    });
+  });
+
   describe("addMargins", function() {
     var data = {
       department: xtabs.factor(["MIS", "MIS", "HR", "TR", null, "TR", "MIS"]),
