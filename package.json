@@ -1,6 +1,6 @@
 {
   "name": "xtabs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A cross tabulation library for Node.js",
   "main": "./lib/xtabs.js",
   "scripts": {

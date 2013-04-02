@@ -75,6 +75,24 @@ var t_ = xtabs.addMargins(t, [0, 1],
   [[{ n: "Sum", f: sum }, { n: "Prod", f: prod }], [{ n: "Sum", f: sum }]]);
 ```
 
+### Proportions of a table
+
+```js
+var t = xtabs.table(data, "department", "gender");
+
+// Proportions calculated in relation to all data.
+var t_ = xtabs.prop(t);
+console.log(t_.get("RD").array); // [0.4, 0.2]
+
+// Proportions calculated in relation to rows.
+var t_ = xtabs.prop(t, 0);
+console.log(t_.get("RD").array); // [2/3, 1/3]
+
+// Proportions calculated in relation to columns.
+var t_ = xtabs.prop(t, 1);
+console.log(t_.get(undefined, "M").array); // [0.5, 0, 0.5]
+```
+
 ## API
 
 ### xtabs.factor(x, [useNull])
@@ -147,6 +165,40 @@ department    M        F      Sum
 ```
 
 You can add multiple margins at once, or apply multiple functions at once, or both. If you want to add multiple margins at once, you pass in an array of margins to be added in order, instead of a single margin. If you want to apply multiple functions, you can provide a list of function objects (See [Adding margins](#adding-margins)) per margin. Functions are applied in the same order the margins are provided.
+
+### xtabs.prop(table, margin)
+
+Return a new table with proportions according to `margin`. If `margin` is undefined or null, then proportions are calculated in relation of the whole table. See [Proportions of a table](#proportions-of-a-table) for examples of how to use it. Also refer to the following diagrams:
+
+```
+Original table:
+                gender
+department    M        F
+   RD         2        1
+   HR         0        0
+   GA         2        0
+
+Proportions in relation to rows:
+                gender
+department    M        F
+   RD        2/3      1/3
+   HR        NaN      NaN
+   GA        2/2      0/2
+
+Proportions in relation to columns:
+                gender
+department    M        F
+   RD        2/4      1/1
+   HR        0/4      0/1
+   GA        2/4      0/1
+
+Proportions in relation to whole:
+                gender
+department    M        F
+   RD        2/5      1/5
+   HR        0/5      0/5
+   GA        2/5      0/5
+```
 
 ## Class: xtabs.Table
 
